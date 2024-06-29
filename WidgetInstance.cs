@@ -38,6 +38,7 @@ using System.Collections;
 using System.IO.Packaging;
 using System.Diagnostics.Contracts;
 using static OCWidget.intel_core_ui;
+using static System.Windows.Forms.AxHost;
 
 namespace OCWidget
 {  
@@ -512,7 +513,7 @@ namespace OCWidget
             core_ratio_text += ocwidget.target_core.ToString();
             core_ratio_text += " Ratio "; 
             int startx = 5;
-            int starty = 5;
+            int starty = 15;
             core_ratio_text_pos = new Point(startx, starty); 
             System.Drawing.Pen ppen2 = new System.Drawing.Pen(System.Drawing.Color.PaleVioletRed);
             line_edit_list = new List<my_line_edit>();
@@ -780,13 +781,13 @@ namespace OCWidget
 
                 //buts
                 startx = ocwidget.BitmapCurrent.Width - (fontwidth * 5 + 15);
-                starty = ocwidget.BitmapCurrent.Height - (fontheight * 2+15);
+                starty = ocwidget.BitmapCurrent.Height - (fontheight * 2+25);
                 my_button apply_but = new my_button(startx, starty, ocwidget.BitmapCurrent, ocwidget.DrawFontDate, "Apply");
                 apply_index = but_index;
                 button_list.Add(apply_but);
                 but_index++;
                 startx = ocwidget.BitmapCurrent.Width - (fontwidth * 4 + 15);
-                starty = 5;
+                starty = 15;
                 my_button back_but = new my_button(startx, starty, ocwidget.BitmapCurrent, ocwidget.DrawFontDate, "Back");
                 button_list.Add(back_but);
             }
@@ -953,7 +954,7 @@ namespace OCWidget
             core_ratio_text += ocwidget.target_core.ToString();
             core_ratio_text += " Freq ";
             int startx = 5;
-            int starty = 5;
+            int starty = 30;
             core_ratio_text_pos = new Point(startx, starty);
             System.Drawing.Pen ppen2 = new System.Drawing.Pen(System.Drawing.Color.PaleVioletRed);
             line_edit_list = new List<my_line_edit>();
@@ -1110,7 +1111,7 @@ namespace OCWidget
                 checkbox_list.Add(apply_for_all_chkbox);
 
                 startx = ocwidget.BitmapCurrent.Width - (fontwidth * 5 + 15);
-                starty = ocwidget.BitmapCurrent.Height - (fontheight * 2 + 15);
+                starty = ocwidget.BitmapCurrent.Height - (fontheight * 2 + 45);
                 my_button apply_but = new my_button(startx, starty, ocwidget.BitmapCurrent, ocwidget.DrawFontDate, "Apply");
 
 
@@ -1118,7 +1119,7 @@ namespace OCWidget
                 button_list.Add(apply_but);
                 but_index++;
                 startx = ocwidget.BitmapCurrent.Width - (fontwidth * 4 + 15);
-                starty = 5;
+                starty = 30;
                 my_button back_but = new my_button(startx, starty, ocwidget.BitmapCurrent, ocwidget.DrawFontDate, "Back");
                 button_list.Add(back_but);
             }
@@ -1424,11 +1425,10 @@ namespace OCWidget
         public user_input_numerical input_keypad;
         public void RequestUpdate()
         {
-            /*if (drawing_mutex.WaitOne(1000))
-            {
-                DrawCoreUse();
-                drawing_mutex.ReleaseMutex();
-            }*/
+            pause_task = false;
+            current_page = PAGE_STATE.main_page;
+            previous_page = current_page;
+            Update_core_usage();
         }
         public void print_debug(float value)
         {
@@ -1557,7 +1557,7 @@ namespace OCWidget
         {
             x_pos = x;
             y_pos = y;
-            if (click_type == ClickType.SwipeLeft)
+            if (click_type == ClickType.SwipeLeft || click_type == ClickType.SwipeUp)
             {
                 pause_task = true;
                 while (!is_paused) ;               
@@ -1582,7 +1582,7 @@ namespace OCWidget
                 }
                 pause_task = false;
             }
-            else if (click_type == ClickType.SwipeRight)
+            else if (click_type == ClickType.SwipeRight || click_type == ClickType.SwipeDown)
             {
                 pause_task = true;
                 while (!is_paused) ;
@@ -1607,7 +1607,7 @@ namespace OCWidget
                 }
                 pause_task = false;
             }
-            else if (click_type== ClickType.Single || click_type == ClickType.Double)
+            else if (click_type== ClickType.Single || click_type == ClickType.Double || click_type == ClickType.Long)
             {
                 bool found = false;
                 if (current_page == PAGE_STATE.main_page)
@@ -1997,26 +1997,6 @@ namespace OCWidget
 
         public unsafe OCWidgetInstance(OCWidgetServer parent, WidgetSize widget_size, Guid instance_guid)
         {
-            /*string exePath = @"File.exe";
-
-            // Create a ProcessStartInfo with the required properties
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = exePath,
-                Verb = "runas" // This verb runs the process with elevated privileges
-            };
-
-            try
-            {
-                // Start the process
-                Process.Start(psi);
-            }
-            catch (Exception ex)
-            {
-                // Handle any exceptions, such as if the user cancels the UAC prompt
-                Console.WriteLine("Error: " + ex.Message);
-            }
-*/
             this.parent = parent;
             this.WidgetSize = widget_size;
             this.Guid = instance_guid;
